@@ -1,0 +1,58 @@
+import { Testimonial } from '../types';
+
+export const TESTIMONIALS: Testimonial[] = [
+  {
+    id: '1',
+    name: 'Thabo Mokoena',
+    course: 'Cybersecurity Analyst (NQF 5)',
+    faculty: 'information-technology',
+    quote: 'MTA changed my life. I came in with just a matric and a dream. Two years later I have an NQF Level 5 occupational certificate and I\'m working as a junior security analyst in Sandton. It\'s all possible!',
+    year: 2025,
+    location: 'Soweto, Gauteng',
+  },
+  {
+    id: '2',
+    name: 'Nomvula Dlamini',
+    course: 'Generic Management (NQF 5)',
+    faculty: 'business-management',
+    quote: 'I was a receptionist for 7 years. After completing my management qualification at MTA I was promoted to office manager within 6 months. The training is practical, relevant, and the lecturers actually care about you.',
+    year: 2025,
+    location: 'Roodepoort, Gauteng',
+  },
+  {
+    id: '3',
+    name: 'Sipho Nkosi',
+    course: 'Project Manager (NQF 5)',
+    faculty: 'hr-professional',
+    quote: 'The project management course at MTA is world-class. I completed the full occupational certificate in 18 months while working full-time. My employer paid for it through a learnership — absolutely no cost to me.',
+    year: 2024,
+    location: 'East London, Eastern Cape',
+  },
+  {
+    id: '4',
+    name: 'Zanele Khumalo',
+    course: 'Retail Store Manager (NQF 6)',
+    faculty: 'retail-commerce',
+    quote: 'I started as a cashier and always felt I had more to give. MTA gave me the qualifications and confidence to step into management. I now run a store with 25 staff and I\'m studying further.',
+    year: 2025,
+    location: 'Pimville, Soweto',
+  },
+  {
+    id: '5',
+    name: 'Kagiso Sithole',
+    course: 'Software Developer (NQF 5)',
+    faculty: 'information-technology',
+    quote: 'I tried self-teaching coding online for years but couldn\'t stay focused. The structure at MTA, the face-to-face classes, the mentors — that\'s what made the difference. I\'m now building apps professionally.',
+    year: 2025,
+    location: 'Soweto, Gauteng',
+  },
+  {
+    id: '6',
+    name: 'Precious Mthembu',
+    course: 'Health and Safety Practitioner (NQF 5)',
+    faculty: 'health-safety-community',
+    quote: 'MTA is the most professional training provider I have encountered in my career. The Health and Safety programme is thorough, the SETA accreditation opens doors, and the support after completion is exceptional.',
+    year: 2024,
+    location: 'Roodepoort, Gauteng',
+  },
+];

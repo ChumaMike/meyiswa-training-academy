@@ -11,6 +11,14 @@ const config: Config = {
       colors: {
         background: "var(--background)",
         foreground: "var(--foreground)",
+        "mta-black": "#1A1A1A",
+        "mta-gold": "#D4A017",
+        "mta-light-gold": "#F5D980",
+        "mta-dark-gold": "#A07C10",
+      },
+      fontFamily: {
+        heading: ["var(--font-montserrat)", "sans-serif"],
+        body: ["var(--font-open-sans)", "sans-serif"],
       },
     },
   },
