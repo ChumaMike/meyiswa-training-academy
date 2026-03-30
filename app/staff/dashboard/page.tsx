@@ -1,148 +1,110 @@
-import { cookies } from 'next/headers';
+'use client';
+
+import { useEffect, useState } from 'react';
 import Link from 'next/link';
 
-type StaffRole = 'lecturer' | 'admin' | 'marketing' | 'support';
+export default function StaffDashboardPage() {
+  const [role, setRole] = useState<string | null>(null);
 
-const ROLE_ICONS: Record<StaffRole, string> = {
-  lecturer: '👨‍🏫',
-  admin: '📋',
-  marketing: '📱',
-  support: '💬',
-};
+  useEffect(() => {
+    const roleCookie = document.cookie.split('; ').find(row => row.startsWith('staff_role='))?.split('=')[1];
+    setRole(roleCookie || 'lecturer');
+  }, []);
 
-const ROLE_NAMES: Record<StaffRole, string> = {
-  lecturer: 'Lecturer',
-  admin: 'Admin Staff',
-  marketing: 'Marketing',
-  support: 'Student Support',
-};
+  if (!role) return null;
 
-async function getRoleContent(role: StaffRole) {
-  const content: Record<StaffRole, { title: string; description: string; tasks: Array<{ icon: string; label: string; count: number; href: string }> }> = {
+  const roleConfigs: Record<string, any> = {
     lecturer: {
-      title: 'Welcome back! 👨‍🏫',
-      description: 'Manage your courses, students, and teaching materials.',
+      title: "Lecturer Dashboard",
+      icon: "👨‍🏫",
       tasks: [
-        { icon: '📚', label: 'Courses Assigned', count: 3, href: '/staff/courses' },
-        { icon: '👥', label: 'Students Enrolled', count: 47, href: '/staff/students' },
-        { icon: '📤', label: 'Materials to Upload', count: 2, href: '/staff/materials' },
-        { icon: '⏱️', label: 'Time Logged Today', count: 6, href: '/staff/time-tracking' },
+        { key: 'courses', label: 'My Courses', icon: '📚', count: 3, href: '/staff/dashboard/lecturer/courses' },
+        { key: 'students', label: 'Active Students', icon: '👥', count: 42, href: '/staff/dashboard/lecturer/students' },
+        { key: 'attendance', label: 'Attendance Today', icon: '✓', count: '38/40', href: '/staff/dashboard/lecturer/attendance' },
+        { key: 'materials', label: 'Materials Uploaded', icon: '📄', count: 15, href: '/staff/dashboard/lecturer/materials' },
       ],
+      pending: ['Assessment submissions pending review', 'Student attendance report due', 'Update course schedule'],
     },
-    admin: {
-      title: 'Administration Dashboard 📋',
-      description: 'Handle enrolments, schedules, and office tasks.',
+    'admin-staff': {
+      title: "Admin Dashboard",
+      icon: "👩‍💼",
       tasks: [
-        { icon: '📝', label: 'Pending Enrolments', count: 8, href: '/staff/enrolments' },
-        { icon: '📅', label: 'Classes This Week', count: 12, href: '/staff/schedules' },
-        { icon: '✓', label: 'Tasks Assigned', count: 5, href: '/staff/tasks' },
-        { icon: '⏱️', label: 'Time Logged Today', count: 7, href: '/staff/time-tracking' },
+        { key: 'enrol', label: 'New Enrolments', icon: '📝', count: 5, href: '/staff/dashboard/admin/enrolments' },
+        { key: 'schedule', label: 'Schedule Changes', icon: '📅', count: 2, href: '/staff/dashboard/admin/schedule' },
+        { key: 'tasks', label: 'My Tasks', icon: '✓', count: 8, href: '/staff/dashboard/admin/tasks' },
+        { key: 'reports', label: 'Reports due this week', icon: '📊', count: 3, href: '/staff/dashboard/admin/reports' },
       ],
+      pending: ['Process new student enrolments', 'Update venue bookings', 'Generate attendance report'],
     },
     marketing: {
-      title: 'Content Management 📱',
-      description: 'Approve posts, manage campaigns, and track social media.',
+      title: "Marketing Dashboard",
+      icon: "📱",
       tasks: [
-        { icon: '⏳', label: 'Posts Awaiting Approval', count: 3, href: '/staff/content' },
-        { icon: '📢', label: 'Active Campaigns', count: 2, href: '/staff/campaigns' },
-        { icon: '✅', label: 'Posts Approved This Week', count: 12, href: '/staff/content' },
-        { icon: '⏱️', label: 'Time Logged Today', count: 5, href: '/staff/time-tracking' },
+        { key: 'queue', label: 'Content Pending', icon: '📣', count: 7, href: '/staff/dashboard/marketing/content' },
+        { key: 'approve', label: 'Posts to Approve', icon: '✏️', count: 3, href: '/staff/dashboard/marketing/approve' },
+        { key: 'calendar', label: 'Scheduled Posts', icon: '📅', count: 12, href: '/staff/dashboard/marketing/calendar' },
+        { key: 'analytics', label: 'This Month Engagement', icon: '📊', count: '2.4K', href: '/staff/dashboard/marketing/analytics' },
       ],
+      pending: ['Approve 3 pending posts', 'Schedule next week content', 'Review analytics report'],
     },
-    support: {
-      title: 'Student Support 💬',
-      description: 'Manage support tickets and track student progress.',
+    'student-support': {
+      title: "Student Support Dashboard",
+      icon: "🤝",
       tasks: [
-        { icon: '🎫', label: 'Open Support Tickets', count: 6, href: '/staff/tickets' },
-        { icon: '👥', label: 'Students You Support', count: 34, href: '/staff/students' },
-        { icon: '📊', label: 'Progress Check-ins Due', count: 4, href: '/staff/progress' },
-        { icon: '⏱️', label: 'Time Logged Today', count: 6, href: '/staff/time-tracking' },
+        { key: 'students', label: 'Students Assigned', icon: '👥', count: 25, href: '/staff/dashboard/support/students' },
+        { key: 'tickets', label: 'Open Tickets', icon: '🎟️', count: 4, href: '/staff/dashboard/support/tickets' },
+        { key: 'progress', label: 'At Risk Students', icon: '📈', count: 6, href: '/staff/dashboard/support/progress' },
+        { key: 'notes', label: 'Notes Updated', icon: '📋', count: 12, href: '/staff/dashboard/support/notes' },
       ],
+      pending: ['Follow up on 4 students', 'Counseling session due', 'Update progress reports'],
     },
   };
-  return content[role];
-}
 
-export default async function StaffDashboard() {
-  const cookieStore = await cookies();
-  const roleHeader = cookieStore.get('mta_staff_role');
-  const role = (roleHeader?.value as StaffRole) || 'lecturer';
-
-  const content = await getRoleContent(role);
+  const config = roleConfigs[role];
 
   return (
     <div className="p-8">
-      {/* Header */}
       <div className="mb-8">
-        <h1 className="font-heading font-bold text-white text-2xl">{content.title}</h1>
-        <p className="text-gray-400 text-sm mt-1">{content.description}</p>
+        <h1 className="font-heading font-bold text-white text-2xl">{config.title}</h1>
+        <p className="text-gray-400 text-sm mt-1">Welcome back! Here's your overview for today.</p>
       </div>
 
-      {/* Task Grid */}
+      {/* Task Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-        {content.tasks.map((task) => (
-          <Link
-            key={task.label}
-            href={task.href}
-            className="bg-gray-900 border border-gray-800 rounded-xl p-5 hover:border-mta-gold transition-colors group"
-          >
-            <div className="flex items-start justify-between mb-3">
-              <span className="text-2xl">{task.icon}</span>
-              <span className="text-gray-600 text-xs group-hover:text-mta-gold transition-colors">Go →</span>
-            </div>
-            <p className="font-heading font-bold text-white text-3xl">{task.count}</p>
-            <p className="text-gray-400 text-sm mt-0.5">{task.label}</p>
+        {config.tasks.map((task: any) => (
+          <Link key={task.key} href={task.href} className="bg-gray-900 border border-gray-800 rounded-xl p-5 hover:border-mta-gold transition-colors group">
+            <span className="text-2xl">{task.icon}</span>
+            <p className="text-white font-semibold mt-2">{task.label}</p>
+            <p className="text-mta-gold text-3xl font-bold mt-3">{task.count}</p>
+            <p className="text-gray-600 text-xs group-hover:text-mta-gold transition-colors mt-2">View →</p>
           </Link>
         ))}
       </div>
 
-      {/* Quick Actions */}
-      <div className="bg-gray-900 border border-gray-800 rounded-xl p-5">
-        <h2 className="font-heading font-semibold text-white text-base mb-4">Quick Actions</h2>
-        <div className="flex flex-wrap gap-3">
-          {role === 'lecturer' && (
-            <>
-              <Link href="/staff/courses" className="px-4 py-2 bg-mta-gold text-mta-black text-sm font-semibold rounded-lg hover:bg-mta-light-gold transition-colors">
-                View My Courses
-              </Link>
-              <Link href="/staff/materials" className="px-4 py-2 bg-gray-800 text-white text-sm font-medium rounded-lg hover:bg-gray-700 transition-colors border border-gray-700">
-                Upload Materials
-              </Link>
-            </>
-          )}
-          {role === 'admin' && (
-            <>
-              <Link href="/staff/enrolments" className="px-4 py-2 bg-mta-gold text-mta-black text-sm font-semibold rounded-lg hover:bg-mta-light-gold transition-colors">
-                Review Enrolments
-              </Link>
-              <Link href="/staff/tasks" className="px-4 py-2 bg-gray-800 text-white text-sm font-medium rounded-lg hover:bg-gray-700 transition-colors border border-gray-700">
-                View Tasks
-              </Link>
-            </>
-          )}
-          {role === 'marketing' && (
-            <>
-              <Link href="/staff/content" className="px-4 py-2 bg-mta-gold text-mta-black text-sm font-semibold rounded-lg hover:bg-mta-light-gold transition-colors">
-                Approve Content
-              </Link>
-              <Link href="/staff/campaigns" className="px-4 py-2 bg-gray-800 text-white text-sm font-medium rounded-lg hover:bg-gray-700 transition-colors border border-gray-700">
-                View Campaigns
-              </Link>
-            </>
-          )}
-          {role === 'support' && (
-            <>
-              <Link href="/staff/tickets" className="px-4 py-2 bg-mta-gold text-mta-black text-sm font-semibold rounded-lg hover:bg-mta-light-gold transition-colors">
-                Open Tickets
-              </Link>
-              <Link href="/staff/progress" className="px-4 py-2 bg-gray-800 text-white text-sm font-medium rounded-lg hover:bg-gray-700 transition-colors border border-gray-700">
-                Student Progress
-              </Link>
-            </>
-          )}
-          <Link href="/staff/time-tracking" className="px-4 py-2 bg-gray-800 text-white text-sm font-medium rounded-lg hover:bg-gray-700 transition-colors border border-gray-700">
-            Time Tracking
-          </Link>
+      {/* Pending Tasks */}
+      <div className="bg-gray-900 border border-gray-800 rounded-xl p-6">
+        <h2 className="font-heading font-semibold text-white text-base mb-4">Pending Tasks</h2>
+        <ul className="space-y-3">
+          {config.pending.map((task: string, i: number) => (
+            <li key={i} className="flex items-start gap-3">
+              <span className="text-mta-gold mt-1">✓</span>
+              <span className="text-gray-300">{task}</span>
+            </li>
+          ))}
+        </ul>
+      </div>
+
+      {/* Time Tracking */}
+      <div className="mt-6 bg-gray-900 border border-gray-800 rounded-xl p-5">
+        <h2 className="font-heading font-semibold text-white text-sm mb-3">Time Tracking</h2>
+        <div className="flex items-center justify-between">
+          <div>
+            <p className="text-gray-400 text-sm">Today's Hours</p>
+            <p className="text-white text-2xl font-bold">7.5h</p>
+          </div>
+          <button className="bg-mta-gold text-mta-black px-4 py-2 rounded-lg font-semibold text-sm hover:bg-mta-light-gold transition-colors">
+            Clock Out
+          </button>
         </div>
       </div>
     </div>
