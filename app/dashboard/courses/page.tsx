@@ -1,4 +1,4 @@
-import { getAllCourses, getCoursesByFaculty } from '@/lib/utils';
+import { getAllCourses, getCoursesByFaculty, getFeaturedCourses } from '@/lib/utils';
 import { FACULTIES } from '@/lib/data/faculties';
 import Badge from '@/components/ui/Badge';
 import { FacultyId } from '@/lib/types';
@@ -6,17 +6,21 @@ import { FacultyId } from '@/lib/types';
 export default function AdminCoursesPage({
   searchParams,
 }: {
-  searchParams: { faculty?: string };
+  searchParams: { faculty?: string; all?: string };
 }) {
   const activeFaculty = searchParams.faculty as FacultyId | undefined;
-  const courses = activeFaculty ? getCoursesByFaculty(activeFaculty) : getAllCourses();
+  const showAll = searchParams.all === '1';
+
+  const allCourses = activeFaculty ? getCoursesByFaculty(activeFaculty) : getAllCourses();
+  const featured = activeFaculty ? allCourses : getFeaturedCourses();
+  const courses = showAll || activeFaculty ? allCourses : featured;
 
   return (
     <div className="p-8">
       <div className="mb-6">
         <h1 className="font-heading font-bold text-white text-2xl">Course Catalogue</h1>
         <p className="text-gray-400 text-sm mt-1">
-          {courses.length} of {getAllCourses().length} qualifications shown
+          {courses.length} courses shown · {getAllCourses().length} total qualifications across 5 faculties
         </p>
       </div>
 
@@ -56,8 +60,7 @@ export default function AdminCoursesPage({
               <th className="text-left text-gray-500 font-medium px-5 py-3 hidden sm:table-cell">NQF</th>
               <th className="text-left text-gray-500 font-medium px-5 py-3 hidden md:table-cell">SETA</th>
               <th className="text-left text-gray-500 font-medium px-5 py-3 hidden lg:table-cell">Duration</th>
-              <th className="text-left text-gray-500 font-medium px-5 py-3 hidden lg:table-cell">Faculty</th>
-              <th className="text-left text-gray-500 font-medium px-5 py-3">Featured</th>
+              <th className="text-left text-gray-500 font-medium px-5 py-3">★</th>
             </tr>
           </thead>
           <tbody>
@@ -79,12 +82,11 @@ export default function AdminCoursesPage({
                   <Badge variant="seta">{c.seta}</Badge>
                 </td>
                 <td className="px-5 py-3 text-gray-400 hidden lg:table-cell">{c.duration}</td>
-                <td className="px-5 py-3 text-gray-400 hidden lg:table-cell text-xs">{c.faculty}</td>
                 <td className="px-5 py-3">
                   {c.featured ? (
-                    <span className="text-mta-gold text-sm">★</span>
+                    <span className="text-mta-gold">★</span>
                   ) : (
-                    <span className="text-gray-700 text-sm">☆</span>
+                    <span className="text-gray-700">☆</span>
                   )}
                 </td>
               </tr>
@@ -92,6 +94,25 @@ export default function AdminCoursesPage({
           </tbody>
         </table>
       </div>
+
+      {/* Show all toggle */}
+      {!activeFaculty && !showAll && (
+        <div className="mt-4 text-center">
+          <a
+            href="/dashboard/courses?all=1"
+            className="text-mta-gold text-sm hover:underline"
+          >
+            Showing {featured.length} featured courses — click to view all {getAllCourses().length} →
+          </a>
+        </div>
+      )}
+      {!activeFaculty && showAll && (
+        <div className="mt-4 text-center">
+          <a href="/dashboard/courses" className="text-gray-500 text-sm hover:underline">
+            ← Show featured courses only
+          </a>
+        </div>
+      )}
     </div>
   );
 }
