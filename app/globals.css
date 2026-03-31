@@ -11,7 +11,7 @@
 
 @layer base {
   body {
-    @apply bg-white text-mta-black;
+    @apply bg-gray-950 text-white;
     font-family: var(--font-open-sans), 'Open Sans', Arial, sans-serif;
   }
 
@@ -40,10 +40,68 @@
   .gold-bar {
     @apply block w-12 h-1 bg-mta-gold mt-3 mb-2;
   }
+
+  /* Glass card effect */
+  .glass-card {
+    @apply bg-gray-900/80 backdrop-blur-sm border border-gray-800 rounded-xl;
+  }
+
+  /* Active nav item — gold left border */
+  .nav-active {
+    @apply bg-mta-gold/15 text-mta-gold border-l-2 border-mta-gold;
+  }
 }
 
 @layer utilities {
   .text-balance {
     text-wrap: balance;
   }
+
+  /* Gold glow shadow */
+  .gold-glow {
+    box-shadow: 0 0 20px rgba(212, 160, 23, 0.15), 0 0 40px rgba(212, 160, 23, 0.05);
+  }
+
+  /* Subtle grid/dot pattern for backgrounds */
+  .bg-grid-pattern {
+    background-image:
+      linear-gradient(rgba(212,160,23,0.04) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(212,160,23,0.04) 1px, transparent 1px);
+    background-size: 40px 40px;
+  }
+}
+
+/* Gold shimmer text animation */
+@keyframes gold-shimmer {
+  0% { background-position: -200% center; }
+  100% { background-position: 200% center; }
+}
+
+.gold-shimmer {
+  background: linear-gradient(90deg, #D4A017 0%, #F5D980 30%, #D4A017 50%, #A07C10 70%, #D4A017 100%);
+  background-size: 200% auto;
+  animation: gold-shimmer 4s linear infinite;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Fade-in animation */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+/* Slide up animation */
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+.animate-slide-up {
+  animation: slideUp 0.4s ease-out;
 }
