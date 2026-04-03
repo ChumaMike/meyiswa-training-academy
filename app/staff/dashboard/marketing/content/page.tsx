@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import AgentHub from '@/components/agents/AgentHub';
 
 const INITIAL_CONTENT = [
   { id: 'C01', topic: 'April 2026 intake — General announcement', platform: 'Facebook + WhatsApp', type: 'Announcement', week: 'Week 1 · Mon 31 Mar', status: 'pending', caption: '🎓 April 2026 intake is OPEN at Meyiswa Training Academy!\n\nAre you ready to change your life? MTA offers 71 nationally accredited qualifications across IT, Business, HR, Health & Safety, and Retail.\n\n✅ NQF Level 4–7\n✅ SETA accredited\n✅ Learnership-eligible\n\nReply "COURSES" for our full brochure.\n\n#MTA #Training #NQF #SETA #April2026' },
@@ -17,6 +18,69 @@ const STATUS_COLORS: Record<Status, string> = {
   rejected: 'bg-red-900 text-red-300 border-red-800',
   draft: 'bg-gray-800 text-gray-400 border-gray-700',
 };
+
+const MARKETING_AGENTS = [
+  {
+    name: 'Auto-Post Agent',
+    description: 'When a post is approved in the content queue, automatically publishes it to Facebook and Instagram at the scheduled time.',
+    icon: '🚀',
+    trigger: 'Post Approved',
+    triggerType: 'event' as const,
+    accentColor: '#EC4899',
+    logLines: [
+      '⏳ Detected approved post: "IT Systems Support NQF5 Spotlight"',
+      '✓ Scheduled time confirmed: Wed 2 Apr · 09:00 SAST',
+      '⏳ Fetching caption and media assets...',
+      '✓ Caption: 287 chars · Media: it-spotlight-graphic.jpg (1.2MB)',
+      '⏳ Publishing to Facebook Page @MeyiswaTrainingAcademy...',
+      '✓ Published! Post ID: fb_291047abc · Reach: ~1,200',
+      '⏳ Publishing to Instagram @meyiswatraining...',
+      '✓ Published! Post ID: ig_48392xyz',
+      '✓ Calendar status updated → "Delivered"',
+      'ℹ Next post queued: Fri 4 Apr — Student Success Story',
+    ],
+  },
+  {
+    name: 'Engagement Tracker Agent',
+    description: 'Runs daily at 9am — pulls likes, shares, reach from all platforms and updates the analytics dashboard.',
+    icon: '📊',
+    trigger: 'Daily 09:00',
+    triggerType: 'scheduled' as const,
+    accentColor: '#EC4899',
+    logLines: [
+      '⏳ Fetching engagement data for past 24h...',
+      '✓ Facebook: 247 likes · 38 shares · 1,840 reach',
+      '✓ Instagram: 312 likes · 22 comments · 2,100 reach',
+      '✓ WhatsApp: 89 message opens · 34 link clicks',
+      '⏳ Identifying top performing post...',
+      '✓ Top post: "April Intake Announcement" — 2.1K combined reach',
+      '⏳ Flagging for content inspiration...',
+      '✓ Analytics dashboard updated',
+      '📤 Daily summary emailed to marketing@meyiswatraining.co.za',
+      '✓ Report delivered. Next run: Thu 4 Apr at 09:00.',
+    ],
+  },
+  {
+    name: 'Content Idea Agent',
+    description: 'Analyses top-performing posts and suggests 3 new content ideas with draft captions ready to review.',
+    icon: '💡',
+    trigger: 'Manual',
+    triggerType: 'manual' as const,
+    accentColor: '#EC4899',
+    logLines: [
+      '⏳ Analysing top performing posts from last 30 days...',
+      '✓ Best engagement: Student success stories (+340% avg reach)',
+      '✓ Best clicks: Course spotlight posts (+180% CTR)',
+      '✓ Best shares: "Did you know?" fact posts',
+      '⏳ Generating 3 content suggestions...',
+      '✓ Idea 1: "From matric to manager — Ayanda\'s HR story" (testimonial)',
+      '✓ Idea 2: "5 jobs you can get with NQF5 IT" (carousel)',
+      '✓ Idea 3: "Why SETA accreditation matters for your career" (educational)',
+      '⏳ Writing draft captions for each...',
+      '✓ 3 draft captions added to content queue for review.',
+    ],
+  },
+];
 
 export default function MarketingContentPage() {
   const [posts, setPosts] = useState(INITIAL_CONTENT);
@@ -71,6 +135,8 @@ export default function MarketingContentPage() {
           </div>
         ))}
       </div>
+
+      <AgentHub agents={MARKETING_AGENTS} title="Marketing Automation" />
     </div>
   );
 }

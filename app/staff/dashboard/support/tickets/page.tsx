@@ -1,3 +1,7 @@
+'use client';
+
+import AgentHub from '@/components/agents/AgentHub';
+
 const TICKETS = [
   { id: 'TK01', student: 'Sipho Dlamini', course: 'IT Systems Support NQF5', issue: 'Cannot access e-learning portal — password reset needed', priority: 'high', status: 'open', date: '2026-03-28' },
   { id: 'TK02', student: 'Nomsa Khumalo', course: 'Business Management NQF6', issue: 'Missing module 3 study materials — not received after class', priority: 'medium', status: 'in-progress', date: '2026-03-27' },
@@ -20,6 +24,69 @@ const STATUS_COLORS: Record<string, string> = {
   escalated: 'bg-red-900 text-red-300',
   resolved: 'bg-green-900 text-green-300',
 };
+
+const SUPPORT_AGENTS = [
+  {
+    name: 'Ticket Auto-Response Agent',
+    description: 'When a new support ticket is submitted, categorises it by keyword and immediately sends an acknowledgment email to the student.',
+    icon: '🎫',
+    trigger: 'New Ticket Submitted',
+    triggerType: 'event' as const,
+    accentColor: '#10B981',
+    logLines: [
+      '⏳ New ticket detected: TK08 — Refiloe Tau',
+      '⏳ Analysing issue: "Fee payment arrangement request"...',
+      '✓ Category detected: Financial / Payments',
+      '✓ Priority assigned: Medium',
+      '✓ Auto-assigned to: Finance Support team',
+      '📤 Sending acknowledgment email to refiloe.t@gmail.com...',
+      '✓ Email delivered: "We\'ve received your query, Refiloe..."',
+      '✓ Ticket TK08 created. Response time SLA: 24 hours.',
+      'ℹ Escalation trigger set: if no response in 24h → High priority.',
+    ],
+  },
+  {
+    name: 'At-Risk Alert Agent',
+    description: 'Weekly scan of student progress — identifies students below 60% engagement and notifies the support team immediately.',
+    icon: '🚨',
+    trigger: 'Every Monday 07:30',
+    triggerType: 'scheduled' as const,
+    accentColor: '#10B981',
+    logLines: [
+      '⏳ Running weekly at-risk student scan...',
+      '✓ Analysed 25 students across 5 programmes',
+      '⚠ 4 students flagged as at-risk (below 60% engagement):',
+      'ℹ  → Thabo Nkosi: 44% progress · 2 missed sessions',
+      'ℹ  → Obakeng Molefe: 28% progress · 4 missed sessions',
+      'ℹ  → Lungelo Sithole: 38% progress · missed last 2 weeks',
+      'ℹ  → Cebile Ndlovu: 52% progress · financial flag',
+      '📤 Notifying support staff: alert summary sent',
+      '📤 Sending check-in messages to 4 at-risk students...',
+      '✓ All 4 students contacted. Cases logged for follow-up.',
+    ],
+  },
+  {
+    name: 'Progress Check-In Agent',
+    description: 'Every two weeks, sends a personalised motivational check-in message to all active students via WhatsApp and email.',
+    icon: '💪',
+    trigger: 'Bi-weekly',
+    triggerType: 'scheduled' as const,
+    accentColor: '#10B981',
+    logLines: [
+      '⏳ Preparing bi-weekly check-in for 25 enrolled students...',
+      '⏳ Personalising messages based on individual progress...',
+      '✓ Sipho Dlamini (72%) → motivational + module 5 reminder',
+      '✓ Zanele Mokoena (91%) → congratulations + stretch resource',
+      '⚠ Thabo Nkosi (44%) → urgent support offer + check-in call',
+      '⏳ Sending via WhatsApp to all 25 students...',
+      '✓ 23/25 WhatsApp messages delivered',
+      'ℹ 2 undeliverable → email fallback triggered',
+      '📤 Email fallbacks sent successfully',
+      '✓ Check-in complete. Response tracking active for 48h.',
+      'ℹ Next check-in scheduled: 17 Apr 2026.',
+    ],
+  },
+];
 
 export default function SupportTicketsPage() {
   const open = TICKETS.filter(t => t.status === 'open').length;
@@ -69,6 +136,8 @@ export default function SupportTicketsPage() {
           </tbody>
         </table>
       </div>
+
+      <AgentHub agents={SUPPORT_AGENTS} title="Support Automation" />
     </div>
   );
 }
